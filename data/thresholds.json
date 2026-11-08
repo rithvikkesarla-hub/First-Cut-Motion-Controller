@@ -1,0 +1,377 @@
+{
+    "accelerometer": {
+        "gravity_cutoff_hz": 0.3,
+        "gravity_correction": "Low-pass estimate subtracted",
+        "unit": "m/s^2",
+        "category_statistics": {
+            "still": {
+                "minimum_peak": 0.34708617108549966,
+                "median_peak": 0.652208883608542,
+                "maximum_peak": 0.9857633277211775
+            },
+            "slow": {
+                "minimum_peak": 9.71508097828861,
+                "median_peak": 13.421161228143742,
+                "maximum_peak": 16.64244836842754
+            },
+            "fast": {
+                "minimum_peak": 37.57952406448639,
+                "median_peak": 49.46450564919214,
+                "maximum_peak": 58.472555740456905
+            }
+        },
+        "thresholds": {
+            "still_slow": {
+                "threshold": 5.350422153004893,
+                "ranges_overlap": false,
+                "lower_category_max": 0.9857633277211775,
+                "upper_category_min": 9.71508097828861
+            },
+            "slow_fast": {
+                "threshold": 27.110986216456965,
+                "ranges_overlap": false,
+                "lower_category_max": 16.64244836842754,
+                "upper_category_min": 37.57952406448639
+            }
+        },
+        "trial_peaks": [
+            {
+                "category": "still",
+                "trial": 1,
+                "peak": 0.9857633277211775
+            },
+            {
+                "category": "still",
+                "trial": 2,
+                "peak": 0.6664334111376431
+            },
+            {
+                "category": "still",
+                "trial": 3,
+                "peak": 0.34708617108549966
+            },
+            {
+                "category": "still",
+                "trial": 4,
+                "peak": 0.6789575483077506
+            },
+            {
+                "category": "still",
+                "trial": 5,
+                "peak": 0.47818273312376447
+            },
+            {
+                "category": "still",
+                "trial": 6,
+                "peak": 0.45058360438108824
+            },
+            {
+                "category": "still",
+                "trial": 7,
+                "peak": 0.5238769683398062
+            },
+            {
+                "category": "still",
+                "trial": 8,
+                "peak": 0.7198071151752399
+            },
+            {
+                "category": "still",
+                "trial": 9,
+                "peak": 0.8413101559215378
+            },
+            {
+                "category": "still",
+                "trial": 10,
+                "peak": 0.637984356079441
+            },
+            {
+                "category": "slow",
+                "trial": 1,
+                "peak": 13.526506631256177
+            },
+            {
+                "category": "slow",
+                "trial": 2,
+                "peak": 13.315815825031308
+            },
+            {
+                "category": "slow",
+                "trial": 3,
+                "peak": 12.612925925684877
+            },
+            {
+                "category": "slow",
+                "trial": 4,
+                "peak": 9.71508097828861
+            },
+            {
+                "category": "slow",
+                "trial": 5,
+                "peak": 13.820378391105148
+            },
+            {
+                "category": "slow",
+                "trial": 6,
+                "peak": 16.64244836842754
+            },
+            {
+                "category": "slow",
+                "trial": 7,
+                "peak": 16.094824879216592
+            },
+            {
+                "category": "slow",
+                "trial": 8,
+                "peak": 13.187777828984004
+            },
+            {
+                "category": "slow",
+                "trial": 9,
+                "peak": 16.587050412260933
+            },
+            {
+                "category": "slow",
+                "trial": 10,
+                "peak": 10.306234274727577
+            },
+            {
+                "category": "fast",
+                "trial": 1,
+                "peak": 39.47896258407323
+            },
+            {
+                "category": "fast",
+                "trial": 2,
+                "peak": 50.580838217269786
+            },
+            {
+                "category": "fast",
+                "trial": 3,
+                "peak": 58.472555740456905
+            },
+            {
+                "category": "fast",
+                "trial": 4,
+                "peak": 55.40540551793356
+            },
+            {
+                "category": "fast",
+                "trial": 5,
+                "peak": 54.595379306830665
+            },
+            {
+                "category": "fast",
+                "trial": 6,
+                "peak": 49.20524372178866
+            },
+            {
+                "category": "fast",
+                "trial": 7,
+                "peak": 49.199000797557694
+            },
+            {
+                "category": "fast",
+                "trial": 8,
+                "peak": 44.67921540910287
+            },
+            {
+                "category": "fast",
+                "trial": 9,
+                "peak": 37.57952406448639
+            },
+            {
+                "category": "fast",
+                "trial": 10,
+                "peak": 49.72376757659562
+            }
+        ]
+    },
+    "gyroscope": {
+        "gravity_correction": "None",
+        "unit": "rad/s",
+        "category_statistics": {
+            "still": {
+                "minimum_peak": 0.05202472902475682,
+                "median_peak": 0.16048981081579844,
+                "maximum_peak": 0.23617390126393845
+            },
+            "slow": {
+                "minimum_peak": 2.7261229448630475,
+                "median_peak": 3.900912495425125,
+                "maximum_peak": 7.775273863762893
+            },
+            "fast": {
+                "minimum_peak": 10.96932259149842,
+                "median_peak": 13.388813902979226,
+                "maximum_peak": 14.617598156347821
+            }
+        },
+        "thresholds": {
+            "still_slow": {
+                "threshold": 1.481148423063493,
+                "ranges_overlap": false,
+                "lower_category_max": 0.23617390126393845,
+                "upper_category_min": 2.7261229448630475
+            },
+            "slow_fast": {
+                "threshold": 9.372298227630656,
+                "ranges_overlap": false,
+                "lower_category_max": 7.775273863762893,
+                "upper_category_min": 10.96932259149842
+            }
+        },
+        "trial_peaks": [
+            {
+                "category": "still",
+                "trial": 1,
+                "peak": 0.20028341621646512
+            },
+            {
+                "category": "still",
+                "trial": 2,
+                "peak": 0.18131037770036237
+            },
+            {
+                "category": "still",
+                "trial": 3,
+                "peak": 0.05202472902475682
+            },
+            {
+                "category": "still",
+                "trial": 4,
+                "peak": 0.2153636795812571
+            },
+            {
+                "category": "still",
+                "trial": 5,
+                "peak": 0.09979964358943173
+            },
+            {
+                "category": "still",
+                "trial": 6,
+                "peak": 0.08774826431201649
+            },
+            {
+                "category": "still",
+                "trial": 7,
+                "peak": 0.09331219126157167
+            },
+            {
+                "category": "still",
+                "trial": 8,
+                "peak": 0.23617390126393845
+            },
+            {
+                "category": "still",
+                "trial": 9,
+                "peak": 0.22612299288673984
+            },
+            {
+                "category": "still",
+                "trial": 10,
+                "peak": 0.13966924393123453
+            },
+            {
+                "category": "slow",
+                "trial": 1,
+                "peak": 3.191065711404589
+            },
+            {
+                "category": "slow",
+                "trial": 2,
+                "peak": 7.775273863762893
+            },
+            {
+                "category": "slow",
+                "trial": 3,
+                "peak": 4.060504239754876
+            },
+            {
+                "category": "slow",
+                "trial": 4,
+                "peak": 3.5491756375167154
+            },
+            {
+                "category": "slow",
+                "trial": 5,
+                "peak": 4.578123555112593
+            },
+            {
+                "category": "slow",
+                "trial": 6,
+                "peak": 4.231826376266864
+            },
+            {
+                "category": "slow",
+                "trial": 7,
+                "peak": 3.6198984723803203
+            },
+            {
+                "category": "slow",
+                "trial": 8,
+                "peak": 3.743191139086031
+            },
+            {
+                "category": "slow",
+                "trial": 9,
+                "peak": 4.058633851764219
+            },
+            {
+                "category": "slow",
+                "trial": 10,
+                "peak": 2.7261229448630475
+            },
+            {
+                "category": "fast",
+                "trial": 1,
+                "peak": 10.96932259149842
+            },
+            {
+                "category": "fast",
+                "trial": 2,
+                "peak": 14.36856651755084
+            },
+            {
+                "category": "fast",
+                "trial": 3,
+                "peak": 13.318305393940012
+            },
+            {
+                "category": "fast",
+                "trial": 4,
+                "peak": 14.533190370704318
+            },
+            {
+                "category": "fast",
+                "trial": 5,
+                "peak": 13.459322412018441
+            },
+            {
+                "category": "fast",
+                "trial": 6,
+                "peak": 13.505508762742911
+            },
+            {
+                "category": "fast",
+                "trial": 7,
+                "peak": 12.865192112289341
+            },
+            {
+                "category": "fast",
+                "trial": 8,
+                "peak": 12.214962609821196
+            },
+            {
+                "category": "fast",
+                "trial": 9,
+                "peak": 13.254730007945028
+            },
+            {
+                "category": "fast",
+                "trial": 10,
+                "peak": 14.617598156347821
+            }
+        ]
+    }
+}
