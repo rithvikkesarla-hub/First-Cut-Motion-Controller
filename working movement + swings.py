@@ -1,3 +1,4 @@
+
 import cv2
 import mediapipe as mp
 import requests
@@ -15,7 +16,7 @@ from mediapipe.tasks.python import vision
 # CONFIGURATION
 # =========================================================
 
-BASE_URL = "http://192.168.29.223:8080/"
+BASE_URL = "" #Add phyphox ka IP here
 
 MODEL_PATH = "pose_landmarker_lite.task"
 
@@ -29,9 +30,13 @@ GRAVITY_Z_MAX = 10.0
 DIRECTION_CONFIRMATION = 3
 GUARD_RELEASE_DELAY = 0.1
 
-# Replace this with your calibrated CV threshold.
 MOVEMENT_THRESHOLD = 0.12
 SMOOTHING = 0.35
+
+# DUCK CONFIGURATION
+DUCK_THRESHOLD = 0.5595
+DUCK_KEY = 'x'
+DUCK_TAP_DURATION = 0.05
 
 
 # =========================================================
@@ -46,6 +51,8 @@ stop_event = threading.Event()
 held_guard_key = None
 held_movement_key = None
 
+duck_latched = False
+
 
 def press_key(key):
     with keyboard_lock:
@@ -54,6 +61,13 @@ def press_key(key):
 
 def release_key(key):
     with keyboard_lock:
+        keyboard.release(key)
+
+
+def tap_key(key):
+    with keyboard_lock:
+        keyboard.press(key)
+        time.sleep(DUCK_TAP_DURATION)
         keyboard.release(key)
 
 
@@ -87,6 +101,7 @@ def update_movement(direction):
 
 def movement_camera():
     global held_movement_key
+    global duck_latched
 
     cap = cv2.VideoCapture(0)
 
@@ -149,13 +164,46 @@ def movement_camera():
                 )
 
                 movement = "STILL"
+                duck_status = "NOT DUCKING"
 
                 if result.pose_landmarks:
 
                     landmarks = result.pose_landmarks[0]
 
-                    # Draw skeleton
+                    # -----------------------------------------
+                    # DUCK DETECTION
+                    # -----------------------------------------
+
+                    left_shoulder = landmarks[11]
+                    right_shoulder = landmarks[12]
+
+                    if (
+                        left_shoulder.visibility > 0.5
+                        and right_shoulder.visibility > 0.5
+                    ):
+
+                        shoulder_y = (
+                            left_shoulder.y + right_shoulder.y
+                        ) / 2
+
+                        if shoulder_y > DUCK_THRESHOLD:
+
+                            duck_status = "DUCKING"
+
+                            if not duck_latched:
+                                tap_key(DUCK_KEY)
+                                duck_latched = True
+                                print("\nDUCK DETECTED - X TAPPED")
+
+                        else:
+                            duck_latched = False
+
+                    # -----------------------------------------
+                    # DRAW SKELETON
+                    # -----------------------------------------
+
                     for start, end in connections:
+
                         x1 = int(landmarks[start].x * frame.shape[1])
                         y1 = int(landmarks[start].y * frame.shape[0])
 
@@ -172,6 +220,7 @@ def movement_camera():
 
                     # Draw landmarks
                     for landmark in landmarks:
+
                         x = int(landmark.x * frame.shape[1])
                         y = int(landmark.y * frame.shape[0])
 
@@ -183,15 +232,20 @@ def movement_camera():
                             -1
                         )
 
-                    # Hip center
+                    # -----------------------------------------
+                    # HIP CENTER MOVEMENT DETECTION
+                    # -----------------------------------------
+
                     center_x = (
                         landmarks[23].x + landmarks[24].x
                     ) / 2
 
                     if previous_center_x is not None:
+
                         dt = current_time - previous_time
 
                         if dt > 0:
+
                             velocity = (
                                 center_x - previous_center_x
                             ) / dt
@@ -211,6 +265,7 @@ def movement_camera():
                     previous_time = current_time
 
                 else:
+
                     previous_center_x = None
                     previous_time = None
                     smoothed_velocity = 0.0
@@ -218,13 +273,27 @@ def movement_camera():
                 # CV updates only left/right keys.
                 update_movement(movement)
 
+                # -----------------------------------------
+                # DISPLAY STATUS
+                # -----------------------------------------
+
                 cv2.putText(
                     frame,
                     f"MOVEMENT: {movement}",
                     (20, 40),
                     cv2.FONT_HERSHEY_SIMPLEX,
-                    1,
+                    0.8,
                     (0, 255, 0),
+                    2
+                )
+
+                cv2.putText(
+                    frame,
+                    f"DUCK: {duck_status}",
+                    (20, 80),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.8,
+                    (0, 255, 255),
                     2
                 )
 
@@ -235,7 +304,9 @@ def movement_camera():
                     break
 
     finally:
+
         update_movement("STILL")
+
         cap.release()
         cv2.destroyAllWindows()
 
@@ -265,6 +336,7 @@ def set_guard_key(new_key):
         return
 
     with keyboard_lock:
+
         if held_guard_key is not None:
             keyboard.release(held_guard_key)
 
@@ -292,8 +364,13 @@ def update_guard(position):
         set_guard_key(None)
 
 
+# =========================================================
+# ATTACK CONTROL
+# Z PRESSED BEFORE GUARD TRANSITION
+# =========================================================
+
 def start_attack(direction=None, attack_kind="DIRECTIONAL"):
-    global attack_active, attack_type
+    global attack_active, attack_type, held_guard_key
 
     if attack_active:
         return
@@ -301,18 +378,34 @@ def start_attack(direction=None, attack_kind="DIRECTIONAL"):
     attack_active = True
     attack_type = attack_kind
 
+    # Decide required guard key.
     if attack_kind == "HORIZONTAL":
-        set_guard_key(None)
+        new_guard_key = None
 
-    elif attack_kind == "DIRECTIONAL":
+    elif direction == "UP TO DOWN":
+        new_guard_key = Key.up
 
-        if direction == "UP TO DOWN":
-            set_guard_key(Key.up)
+    elif direction == "DOWN TO UP":
+        new_guard_key = Key.down
 
-        elif direction == "DOWN TO UP":
-            set_guard_key(Key.down)
+    else:
+        new_guard_key = None
 
-    press_key('z')
+    # Press Z immediately after recognition.
+    with keyboard_lock:
+
+        keyboard.press('z')
+
+        # Change guard after Z has been pressed.
+        if held_guard_key != new_guard_key:
+
+            if held_guard_key is not None:
+                keyboard.release(held_guard_key)
+
+            held_guard_key = new_guard_key
+
+            if held_guard_key is not None:
+                keyboard.press(held_guard_key)
 
     print(f"\n{attack_kind} ATTACK TRIGGERED")
 
@@ -341,7 +434,9 @@ def finish_guard_release():
     global guard_release_pending
 
     if guard_release_pending and time.time() >= guard_release_time:
+
         set_guard_key(None)
+
         guard_release_pending = False
 
 
@@ -351,7 +446,9 @@ def force_horizontal_mode():
     global direction_trend, direction_count
 
     if attack_active and attack_type == "DIRECTIONAL":
+
         release_key('z')
+
         attack_active = False
         attack_type = None
 
@@ -425,7 +522,7 @@ try:
 
         try:
 
-            # IMU polling is independent of webcam processing.
+            # IMU polling
             lin_x, lin_y, lin_z, gravity_y, gravity_z = get_sensor_data()
 
             acceleration = math.sqrt(
@@ -443,6 +540,7 @@ try:
                 if acceleration > ATTACK_THRESHOLD:
 
                     if not attack_active:
+
                         start_attack(
                             direction=None,
                             attack_kind="HORIZONTAL"
@@ -512,6 +610,7 @@ try:
                                     direction_count = 0
 
                     else:
+
                         direction_trend = None
                         direction_count = 0
 
@@ -531,7 +630,6 @@ try:
                 f"ATTACK: {attack_type or 'NONE':12}"
             )
 
-            # Update the same terminal line instead of printing every reading.
             sys.stdout.write("\r\033[K" + status)
             sys.stdout.flush()
 
@@ -549,13 +647,15 @@ try:
 
 
 except KeyboardInterrupt:
+
     print("\n\nController stopped by user.")
+
 
 finally:
 
     stop_event.set()
 
-    # Release only IMU-owned keys here.
+    # Release IMU-owned keys.
     release_key('z')
     set_guard_key(None)
 
